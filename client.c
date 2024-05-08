@@ -6,11 +6,35 @@
 /*   By: mhummel <mhummel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 10:07:41 by mhummel           #+#    #+#             */
-/*   Updated: 2024/04/30 11:25:02 by mhummel          ###   ########.fr       */
+/*   Updated: 2024/05/08 09:24:02 by mhummel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+void	send_message(int server_pid, char *message)
+{
+	int		i;
+	int		j;
+
+	i = 0;
+
+	while (message[i])
+	{
+		j = 0;
+		while (j < 8)
+		{
+			if (message[i] & 1)
+				kill(server_pid, SIGUSR1);
+			else
+				kill(server_pid, SIGUSR2);
+			message[i] >>= 1;
+			usleep(150);
+			j++;
+		}
+		i++;
+	}
+}
 
 int	main(int argc, char *argv[])
 {
@@ -25,22 +49,7 @@ int	main(int argc, char *argv[])
 
 	server_pid = ft_atoi(argv[1]);
 	message = argv[2];
-
-	ft_printf("Sending message '%s' to server PID %d\n", message, server_pid);
-
-	union sigval sv;
-	sv.sival_ptr = (void *)message;
-	int result = sigqueue(server_pid, SIGUSR1, sv);
-
-	if (result == 0)
-	{
-		printf("Signal successfully sent to server\n");
-	}
-	else
-	{
-		perror("Error sending signal");
-		return (1);
-	}
-
+	send_message(server_pid, message);
+	ft_printf("Message sent\n");
 	return (0);
 }

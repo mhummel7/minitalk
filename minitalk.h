@@ -6,7 +6,7 @@
 /*   By: mhummel <mhummel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 10:08:22 by mhummel           #+#    #+#             */
-/*   Updated: 2024/04/30 11:26:40 by mhummel          ###   ########.fr       */
+/*   Updated: 2024/05/07 12:15:02 by mhummel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,7 @@
 # include <unistd.h>
 # include <sys/types.h>
 
-char	g_received_message[1000];
-void	sigusr1_handler(int sig, siginfo_t *info, void *context);
-void	sigusr2_handler(int sig);
+void	handler(int signum);
+void	send_message(int server_pid, char *message);
 
 #endif

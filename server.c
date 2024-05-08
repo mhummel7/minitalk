@@ -6,59 +6,41 @@
 /*   By: mhummel <mhummel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 10:07:44 by mhummel           #+#    #+#             */
-/*   Updated: 2024/04/30 11:25:37 by mhummel          ###   ########.fr       */
+/*   Updated: 2024/05/08 09:02:07 by mhummel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-char	g_received_message[1000];
-
-void	sigusr1_handler(int sig, siginfo_t *info, void *context)
+void	handler(int message)
 {
-	size_t	message_length;
+	static char	c;
+	static int	i;
 
-	(void)sig;
-	(void)context;
-	ft_printf("Received SIGUSR1\n");
-	if (info->si_value.sival_ptr == NULL)
+	if (message == SIGUSR1)
+		c |= 1 << i;
+	i++;
+	if (i == 8)
 	{
-		ft_printf("Error: Received message pointer is NULL\n");
-		return ;
+		ft_printf("%c", c);
+		if (c == '\0')
+			ft_printf("\n");
+		c = 0;
+		i = 0;
 	}
-	message_length = strlen((char *)info->si_value.sival_ptr);
-	if (message_length >= sizeof(g_received_message))
-	{
-		ft_printf("Error: Received message is too large\n");
-		return ;
-	}
-	strcpy(g_received_message, (char *)info->si_value.sival_ptr);
-	ft_printf("Server received message: %s\n", g_received_message);
 }
 
-void	sigusr2_handler(int sig)
-{
-	ft_printf("Received SIGUSR2\n");
-	(void)sig;
-}
+
 
 int	main(void)
 {
-	struct sigaction sa1, sa2;
+	int	pid;
 
-	ft_printf("Server PID: %d\n", getpid());
-
-	memset(&sa1, 0, sizeof(sa1));
-	sa1.sa_sigaction = sigusr1_handler;
-	sa1.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa1, NULL);
-
-	sa2.sa_handler = sigusr2_handler;
-	sigemptyset(&sa2.sa_mask);
-	sigaction(SIGUSR2, &sa2, NULL);
-
+	pid = getpid();
+	ft_printf("Server PID: %d\n", pid);
+	signal(SIGUSR1, handler);
+	signal(SIGUSR2, handler);
 	while (1)
-		sleep(1);
-
+		pause();
 	return (0);
 }
