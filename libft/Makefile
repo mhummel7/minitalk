@@ -6,7 +6,7 @@
 #    By: mhummel <mhummel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/13 11:03:31 by mhummel           #+#    #+#              #
-#    Updated: 2024/04/29 11:23:01 by mhummel          ###   ########.fr        #
+#    Updated: 2024/05/28 11:13:34 by mhummel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,13 +53,10 @@ CFILES =	ft_atoi.c \
 
 OFILES = $(CFILES:.c=.o)
 
-all: $(NAME)
+all:    $(NAME)
 
-$(NAME): $(OFILES)
-	$(AR) -r $@ $?
-
-%.o: %.c
-	$(CC) -c $(CFLAGS) $?
+$(NAME):    $(OFILES)
+	ar rsc $(NAME) $(OFILES)
 
 clean:
 	rm -f $(OFILES)
@@ -69,4 +66,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus

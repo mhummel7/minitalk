@@ -6,31 +6,27 @@
 /*   By: mhummel <mhummel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 10:07:44 by mhummel           #+#    #+#             */
-/*   Updated: 2024/05/08 09:02:07 by mhummel          ###   ########.fr       */
+/*   Updated: 2024/07/08 10:06:07 by mhummel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	handler(int message)
+void	handler(int signal)
 {
-	static char	c;
-	static int	i;
+	static t_message	message = {NULL, 0, 0, 0, 0, 0};
 
-	if (message == SIGUSR1)
-		c |= 1 << i;
-	i++;
-	if (i == 8)
+	if (signal == SIGUSR1)
+		message.c |= (1 << message.bit_index);
+	message.bit_index++;
+	if (message.bit_index == 8)
 	{
-		ft_printf("%c", c);
-		if (c == '\0')
-			ft_printf("\n");
-		c = 0;
-		i = 0;
+		process_char(&message);
+		message.c = 0;
+		message.bit_index = 0;
+		message.i ++;
 	}
 }
-
-
 
 int	main(void)
 {
@@ -38,9 +34,11 @@ int	main(void)
 
 	pid = getpid();
 	ft_printf("Server PID: %d\n", pid);
-	signal(SIGUSR1, handler);
-	signal(SIGUSR2, handler);
 	while (1)
+	{
+		signal(SIGUSR1, handler);
+		signal(SIGUSR2, handler);
 		pause();
+	}
 	return (0);
 }
